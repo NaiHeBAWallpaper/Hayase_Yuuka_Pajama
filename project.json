@@ -69,6 +69,15 @@
 				"type" : "slider",
 				"value" : 70
 			},
+			"drawHitboxes" : 
+			{
+				"condition" : "mouseactions.value == true",
+				"index" : 15,
+				"order" : 115,
+				"text" : "Interactive Area",
+				"type" : "bool",
+				"value" : false
+			},
 			"fireworks" : 
 			{
 				"index" : 13,
@@ -236,7 +245,7 @@
 	"tags" : [ "Anime" ],
 	"title" : "Blue Archive | Hayase Yuuka (Pajama)",
 	"type" : "Web",
-	"version" : 4,
+	"version" : 5,
 	"visibility" : "public",
 	"workshopid" : "3503250687",
 	"workshopurl" : "steam://url/CommunityFilePage/3503250687"
