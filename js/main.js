@@ -9,6 +9,8 @@ let renderTimer;
 let spineData;
 
 let customScale = 1;
+let positionX = 0;
+let positionY = 0;
 let targetFps = 60;
 let bgmfile = './assets/audio/Miracle.flac';
 let bgmvolume = 0;
@@ -32,7 +34,17 @@ let flipped = false;
 let transpose = 1;
 
 let currentTracks = []; // 跟踪当前播放的音频
-window.selectedLanguage = 'Japanese'; // 全局语言变量（挂载到window对象）
+let interfaceLanguage = 'default';
+let steamLanguage = '';
+let subtitleLanguagePreference = 'auto';
+window.selectedLanguage = 'English';
+const subtitleLocales = {
+	English: 'en',
+	Chinese: 'zh-Hans',
+	TraditionalChinese: 'zh-Hant',
+	Japanese: 'ja',
+	Korean: 'ko'
+};
 
 const CHARACTER = 'CH0284';
 let modelResolution = '8k';
@@ -47,7 +59,13 @@ const AUDIO_DETAIL = [
 		dialog: {
 			Japanese: ["せ、先生？こんな時間にどうして……？"],
 			English: ["Teacher? Why are you here at this hour...?"],
-			Chinese: ["老、老师？这个时间点您为什么会在这……？"]
+			Chinese: ["老、老师？这个时间点您为什么会在这……？"],
+			TraditionalChinese: [
+				"老，老師？這個時間你怎麼會……"
+			],
+			Korean: [
+				"서, 선생님? 이 시간에 여기는 무슨 일로…"
+			]
 		}
 	},
 	{
@@ -66,6 +84,16 @@ const AUDIO_DETAIL = [
 				"那、那个……这是、那个……",
 				"我有点睡不着、出来散步的时候……",
 				"无意间看到了贴在那的「天使鸡」……"
+			],
+			TraditionalChinese: [
+				"那，那個……這個是，因為……",
+				"我有點睡不著，所以就出來散步……",
+				"結果那邊海報上的「天使炸雞」一下映入眼簾──"
+			],
+			Korean: [
+				"그, 그러니까 이건… 그…",
+				"잠이 오지 않는 김에 산책을 나왔는데,",
+				"편의점 전단지의 엔젤 치킨이 눈에 들어와서—"
 			]
 		}
 	},
@@ -85,6 +113,16 @@ const AUDIO_DETAIL = [
 				"因、因为、这也是没办法的吧？",
 				"这个时间有刚炸好的、天使鸡啊！",
 				"热乎乎而且冒着汁水！根本没有不买的理由啊！"
+			],
+			TraditionalChinese: [
+				"但，但是，這也沒辦法吧？",
+				"這個時段的天使炸雞，可是剛炸好的！",
+				"熱呼呼又有滿滿的肉汁！怎麼可能不買！"
+			],
+			Korean: [
+				"하, 하지만 어쩔 수 없잖아요!",
+				"이 시간의 엔젤 치킨은 막 튀겨낸 것이라,",
+				"제일 따듯하고 육즙도 촉촉하다고요! 안 사는 게 손해잖아요?"
 			]
 		}
 	},
@@ -101,6 +139,14 @@ const AUDIO_DETAIL = [
 			Chinese: [
 				"所、所以那个……也不是、每天都、",
 				"吃宵夜、啦……"
+			],
+			TraditionalChinese: [
+				"所，所以那個……我其實，也不是天天都……",
+				"會吃宵夜的……"
+			],
+			Korean: [
+				"그러니까…… 매일 이렇게 밤마다 나와서",
+				"야식을 먹고 있는 건 아니니까…"
 			]
 		}
 	},
@@ -117,6 +163,14 @@ const AUDIO_DETAIL = [
 			Chinese: [
 				"那那个……要不、",
 				"老师也、吃一口？"
+			],
+			TraditionalChinese: [
+				"那個……不介意的話……",
+				"老師要不要也吃一口？"
+			],
+			Korean: [
+				"혹시 괜찮으시다면",
+				"선생님도 한 입, 드시겠어요?"
 			]
 		}
 	}
@@ -302,7 +356,8 @@ function drawHitboxes() {
 		n = (n / transpose) - (d[side].length / (transpose * 2));
 		n = n * customScale + (d[side].length / (transpose * 2));
 		n = (d[side].length / (transpose * 2)) - n;
-		return d[side].mid - n;
+		const offset = side === 'x' ? canvas.width * positionX : canvas.height * positionY;
+		return d[side].mid - n + offset;
 	}
 
 	for (const key in HITBOX) {
@@ -395,12 +450,46 @@ function setMouse(event) {
 		ax = canvas.width - ax;
 	}
 
-	return { x: ax, y: ay }
+	return { x: ax - canvas.width * positionX, y: ay - canvas.height * positionY };
+}
+
+function updateSubtitleLanguage() {
+	let language = subtitleLanguagePreference;
+	if (language === 'auto') {
+		const locale = interfaceLanguage === 'default' ? steamLanguage : interfaceLanguage;
+		const [primary, region] = locale.split(/[-_]/);
+		if (primary === 'tchinese' || (primary === 'zh' && ['cht', 'hant', 'tw', 'hk', 'mo'].includes(region))) {
+			language = 'TraditionalChinese';
+		} else if (primary === 'schinese' || primary === 'zh') {
+			language = 'Chinese';
+		} else if (primary === 'ja' || primary === 'japanese') {
+			language = 'Japanese';
+		} else if (primary === 'ko' || primary === 'korean' || primary === 'koreana') {
+			language = 'Korean';
+		} else {
+			language = 'English';
+		}
+	}
+
+	if (language === window.selectedLanguage) return;
+	window.selectedLanguage = language;
+	textbox.lang = subtitleLocales[language];
+	const clip = currentTracks.at(-1);
+	if (dialogBox && clip) textbox.textContent = clip.dialog[language][clip.index];
+	window.dispatchEvent(new Event('languageChange'));
 }
 
 function init() {
 	// Wallpaper Engine settings
 	window.wallpaperPropertyListener = {
+		applyGeneralProperties: (props) => {
+			const language = props.language?.value ?? props.language;
+			const steamLocale = props.steamlanguage?.value ?? props.steamlanguage;
+			if (typeof language !== 'string' && typeof steamLocale !== 'string') return;
+			if (typeof language === 'string') interfaceLanguage = language.toLowerCase();
+			if (typeof steamLocale === 'string') steamLanguage = steamLocale.toLowerCase();
+			updateSubtitleLanguage();
+		},
 		applyUserProperties: (props) => {
 			if (props.schemecolor) {
 				bufferColor = props.schemecolor.value.split(" ");
@@ -409,8 +498,16 @@ function init() {
 			if (props.scale) {
 				customScale = props.scale.value;
 				document.documentElement.style.setProperty('--wallpaper-scale', customScale);
-				resize();
 			}
+			if (props.positionx) {
+				positionX = props.positionx.value / 100;
+				document.documentElement.style.setProperty('--wallpaper-position-x', props.positionx.value + 'vw');
+			}
+			if (props.positiony) {
+				positionY = props.positiony.value / 100;
+				document.documentElement.style.setProperty('--wallpaper-position-y', props.positiony.value + 'vh');
+			}
+			if (props.scale || props.positionx || props.positiony) resize();
 			if (props.targetfps) targetFps = props.targetfps.value;
 
 			if (props.introanimation) introAnimation = props.introanimation.value;
@@ -418,7 +515,7 @@ function init() {
 				const selected = props.modelresolution.value;
 				if (['2k', '4k', '8k'].includes(selected)) modelResolution = selected;
 			}
-			requestModelResolution();
+			requestModelResolution(Boolean(props.modelresolution));
 
 			if (props.mousetracking) mouseOptions.mousetracking = props.mousetracking.value;
 			if (props.headpatting) mouseOptions.headpatting = props.headpatting.value;
@@ -429,24 +526,10 @@ function init() {
 			if (props.dialogy) textbox.style.top = props.dialogy.value + '%';
 			if (props.drawHitboxes) mouseOptions.drawHitboxes = props.drawHitboxes.value;
 
-			// 新增：监听语言选择
 			if (props.dialoglanguage) {
-				window.selectedLanguage = props.dialoglanguage.value; // 更新全局语言变量
-				// 触发语言变更事件
-				const languageChangeEvent = new Event('languageChange');
-				window.dispatchEvent(languageChangeEvent);
-				// 更新当前播放的音频文本
-				const clip = currentTracks[currentTracks.length - 1];
-				if (dialogBox && clip) {
-					textbox.textContent = clip.dialog[window.selectedLanguage][clip.index];
-				}
-				// 更新intro语音文本
-				if (introAudioIsPlaying && introAudioDetail && dialogBox) {
-					const currentIndex = introAudioDetail.startTimes.findIndex(time => Date.now() >= time);
-					if (currentIndex >= 0 && introAudioDetail.dialog[window.selectedLanguage]) {
-						textbox.innerHTML = introAudioDetail.dialog[window.selectedLanguage][currentIndex];
-					}
-				}
+				const language = props.dialoglanguage.value;
+				subtitleLanguagePreference = Object.hasOwn(subtitleLocales, language) ? language : 'auto';
+				updateSubtitleLanguage();
 			}
 
 			// 添加introDialog属性处理
@@ -480,6 +563,7 @@ function init() {
 	};
 
 	textbox = document.getElementById('textbox');
+	textbox.lang = subtitleLocales[window.selectedLanguage];
 
 	canvas = document.getElementById('canvas');
 	canvas.addEventListener('mouseleave', releaseHeadpatOnExit);
@@ -510,6 +594,7 @@ function init() {
 		if (typeof introAnimation === 'undefined') introAnimation = true;
 		requestModelResolution();
 	}, 350);
+	window.addEventListener('resize', resize);
 	window.addEventListener('pagehide', event => {
 		if (event.persisted) return;
 		canvas.style.visibility = 'hidden';
@@ -560,8 +645,8 @@ function interactionLoad() {
 
 let introAudioIsPlaying = false;
 
-function requestModelResolution() {
-	if (!assetManager || modelFrame || typeof introAnimation === 'undefined' || loadingResolution === modelResolution) return;
+function requestModelResolution(force = false) {
+	if (!assetManager || modelFrame || typeof introAnimation === 'undefined' || (!force && loadingResolution === modelResolution)) return;
 	loadingResolution = modelResolution;
 	const directory = loadingResolution === '8k' ? 'assets/' : 'assets/' + loadingResolution + '/';
 	const models = [CHARACTER + '_home'];
@@ -640,6 +725,14 @@ function load(binaryPaths, atlasPaths) {
 					Chinese: [
 						"啊、嗯嗯…好好吃……",
 						"呜、呜哇……！？"
+					],
+					TraditionalChinese: [
+						"真好喝～♪",
+						"嗚、嗚哇……！？"
+					],
+					Korean: [
+						"맛있어어-",
+						"아우!"
 					]
 				},
 				dialogPosition: {
@@ -822,9 +915,12 @@ function render() {
 function resize() {
 	let w = canvas.clientWidth;
 	let h = canvas.clientHeight;
+	if (w === 0 || h === 0) return;
 	if (canvas.width != w || canvas.height != h) {
 		canvas.width = w;
 		canvas.height = h;
+		overlay.width = w;
+		overlay.height = h;
 	}
 
 	// Set values to position skeleton to center of canvas.
@@ -850,7 +946,7 @@ function resize() {
 		transpose = 1600 / canvas.height;
 	}
 
-	mvp.ortho2d(centerX - width / 2, centerY - height / 2, width, height);
+	mvp.ortho2d(centerX - width / 2 - positionX * width, centerY - height / 2 + positionY * height, width, height);
 	gl.viewport(0, 0, canvas.width, canvas.height);
 }
 
