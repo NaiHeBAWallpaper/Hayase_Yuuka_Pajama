@@ -43,7 +43,8 @@ const subtitleLocales = {
 	Chinese: 'zh-Hans',
 	TraditionalChinese: 'zh-Hant',
 	Japanese: 'ja',
-	Korean: 'ko'
+	Korean: 'ko',
+	Thai: 'th'
 };
 
 const CHARACTER = 'CH0284';
@@ -58,32 +59,33 @@ const AUDIO_DETAIL = [
 	{
 		dialog: {
 			Japanese: ["せ、先生？こんな時間にどうして……？"],
-			English: ["Teacher? Why are you here at this hour...?"],
-			Chinese: ["老、老师？这个时间点您为什么会在这……？"],
+			English: ["S-Sensei? What are you doing here, at this time?"],
+			Chinese: ["老，老师？！这个时间怎么会来这里……"],
 			TraditionalChinese: [
 				"老，老師？這個時間你怎麼會……"
 			],
 			Korean: [
 				"서, 선생님? 이 시간에 여기는 무슨 일로…"
-			]
+			],
+			Thai: ["คะ... คุณครู? มาทำอะไรที่นี่เวลานี้..."]
 		}
 	},
 	{
 		dialog: {
 			Japanese: [
-				"え、えっと……これは、その……",
+				"え、えっと……これは、その…… ",
 				"ちょっと寝付けなくて、散歩に出たら……",
 				"そこの貼り紙の「エンジェルチキン」が目に入ったんです……。"
 			],
 			English: [
-				"W-well... This is, um...",
-				"I couldn't sleep, so I went for a walk...",
-				"Then I noticed the poster for 'Angel Chicken'..."
+				"S-So... Well... Um...",
+				"I couldn't fall asleep, so I took a walk...",
+				"...and the angel chicken shown in the convenience store flyer caught my eye..."
 			],
 			Chinese: [
-				"那、那个……这是、那个……",
-				"我有点睡不着、出来散步的时候……",
-				"无意间看到了贴在那的「天使鸡」……"
+				"这，这个是，那个……我……",
+				"我睡不着，所以就出来散散步……",
+				"便利店传单上印着我最喜欢的天使炸鸡！"
 			],
 			TraditionalChinese: [
 				"那，那個……這個是，因為……",
@@ -94,7 +96,8 @@ const AUDIO_DETAIL = [
 				"그, 그러니까 이건… 그…",
 				"잠이 오지 않는 김에 산책을 나왔는데,",
 				"편의점 전단지의 엔젤 치킨이 눈에 들어와서—"
-			]
+			],
+			Thai: ["คะ... คือว่า อันนี้... คือ...","ฉันนอนไม่หลับ ก็เลยลงมาเดินเล่น","แล้วก็เห็นไก่ทอดเอ็นเจล ในใบปลิวของร้านสะดวกซื้อ..."]
 		}
 	},
 	{
@@ -105,14 +108,14 @@ const AUDIO_DETAIL = [
 				"あっつあつで肉汁たっぷりなんですから！買わない手はありません！"
 			],
 			English: [
-				"B-but, what else could I do?",
-				"The Angel Chicken is freshly fried at this hour!",
-				"It's piping hot and full of juices! There's no way I could resist!"
+				"I couldn't help it!",
+				"The angel chicken is freshly fried around this time.",
+				"It's so warm and juicy! It's more of a loss to NOT buy it!"
 			],
 			Chinese: [
-				"因、因为、这也是没办法的吧？",
-				"这个时间有刚炸好的、天使鸡啊！",
-				"热乎乎而且冒着汁水！根本没有不买的理由啊！"
+				"可是，那也是人之常情吧！",
+				"这个点的天使炸鸡是刚刚炸出锅的，",
+				"正热乎着呢，喏，肉汁也超丰富啊！不买那不就亏了？！"
 			],
 			TraditionalChinese: [
 				"但，但是，這也沒辦法吧？",
@@ -123,7 +126,8 @@ const AUDIO_DETAIL = [
 				"하, 하지만 어쩔 수 없잖아요!",
 				"이 시간의 엔젤 치킨은 막 튀겨낸 것이라,",
 				"제일 따듯하고 육즙도 촉촉하다고요! 안 사는 게 손해잖아요?"
-			]
+			],
+			Thai: ["แต่ก็ช่วยไม่ได้นี่คะ!","ก็ไก่ทอดเอ็นเจล ที่ทอดใหม่ๆ ในเวลานี้","มันทั้งร้อนและ ชุ่มฉ่ำที่สุดเลยนี่คะ! ถ้าไม่ซื้อก็เสียดายแย่ค่ะ"]
 		}
 	},
 	{
@@ -133,12 +137,12 @@ const AUDIO_DETAIL = [
 				"夜食を取ってるわけじゃ、ないんですから……。"
 			],
 			English: [
-				"S-so it's not like... I'm having",
-				"midnight snacks every single day or anything..."
+				"And...it's not like I come here...",
+				"...for a late night snack every day... "
 			],
 			Chinese: [
-				"所、所以那个……也不是、每天都、",
-				"吃宵夜、啦……"
+				"但其实……我也不是每天都像这样……",
+				"一到晚上就出来吃宵夜……"
 			],
 			TraditionalChinese: [
 				"所，所以那個……我其實，也不是天天都……",
@@ -147,7 +151,8 @@ const AUDIO_DETAIL = [
 			Korean: [
 				"그러니까…… 매일 이렇게 밤마다 나와서",
 				"야식을 먹고 있는 건 아니니까…"
-			]
+			],
+			Thai: ["แต่ว่า... ฉันไม่ได้ออกมากินมื้อดึก","แบบนี้ทุกคืนหรอกนะคะ..."]
 		}
 	},
 	{
@@ -157,12 +162,12 @@ const AUDIO_DETAIL = [
 				"先生も一口、食べますか？"
 			],
 			English: [
-				"Um... if you'd like,",
-				"would you like a bite too, teacher?"
+				"I-If you want...",
+				"Do you want to try a bite, Sensei?"
 			],
 			Chinese: [
-				"那那个……要不、",
-				"老师也、吃一口？"
+				"如果不介意的话……",
+				"老师要不要也尝一口？"
 			],
 			TraditionalChinese: [
 				"那個……不介意的話……",
@@ -171,7 +176,8 @@ const AUDIO_DETAIL = [
 			Korean: [
 				"혹시 괜찮으시다면",
 				"선생님도 한 입, 드시겠어요?"
-			]
+			],
+			Thai: ["ถ้าไม่ติดอะไรละก็","คุณครูก็ลองชิมสักคำมั้ยคะ?"]
 		}
 	}
 ];
@@ -283,7 +289,7 @@ function playVoiceline() {
 			track.play().catch(finish);
 
 			if (dialogBox) {
-				textbox.textContent = dialog[window.selectedLanguage][index];
+				textbox.textContent = getSubtitleText(dialog, window.selectedLanguage, index);
 				textbox.style.opacity = 1;
 			}
 		},
@@ -453,6 +459,16 @@ function setMouse(event) {
 	return { x: ax - canvas.width * positionX, y: ay - canvas.height * positionY };
 }
 
+function getSubtitleText(dialog, language, index) {
+	let text = dialog?.[language]?.[index];
+	if (text == null && language === 'Thai') {
+		language = 'English';
+		text = dialog?.[language]?.[index];
+	}
+	textbox.lang = subtitleLocales[language];
+	return text ?? "";
+}
+
 function updateSubtitleLanguage() {
 	let language = subtitleLanguagePreference;
 	if (language === 'auto') {
@@ -466,6 +482,8 @@ function updateSubtitleLanguage() {
 			language = 'Japanese';
 		} else if (primary === 'ko' || primary === 'korean' || primary === 'koreana') {
 			language = 'Korean';
+		} else if (primary === 'th' || primary === 'thai') {
+			language = 'Thai';
 		} else {
 			language = 'English';
 		}
@@ -475,7 +493,7 @@ function updateSubtitleLanguage() {
 	window.selectedLanguage = language;
 	textbox.lang = subtitleLocales[language];
 	const clip = currentTracks.at(-1);
-	if (dialogBox && clip) textbox.textContent = clip.dialog[language][clip.index];
+	if (dialogBox && clip) textbox.textContent = getSubtitleText(clip.dialog, language, clip.index);
 	window.dispatchEvent(new Event('languageChange'));
 }
 
@@ -733,7 +751,8 @@ function load(binaryPaths, atlasPaths) {
 					Korean: [
 						"맛있어어-",
 						"아우!"
-					]
+					],
+					Thai: ["อร่อยจัง...","อ๊ะ ว้าย!"]
 				},
 				dialogPosition: {
 					x: introDialogX,
@@ -760,18 +779,18 @@ function load(binaryPaths, atlasPaths) {
 						if (i === 0) {
 							setTimeout(() => {
 								const selectedLanguage = window.selectedLanguage || 'Japanese';
-								textbox.innerHTML = introAudioDetail.dialog[selectedLanguage][i];
+								textbox.innerHTML = getSubtitleText(introAudioDetail.dialog, selectedLanguage, i);
 								textbox.style.opacity = 1;
 							}, 4000);
 						} else {
 							const selectedLanguage = window.selectedLanguage || 'Japanese';
-							textbox.innerHTML = introAudioDetail.dialog[selectedLanguage][i];
+							textbox.innerHTML = getSubtitleText(introAudioDetail.dialog, selectedLanguage, i);
 							textbox.style.opacity = 1;
 						}
 						// 添加语言切换监听
 						const updateText = () => {
 							const currentLanguage = window.selectedLanguage || 'Japanese';
-							textbox.innerHTML = introAudioDetail.dialog[currentLanguage][i];
+							textbox.innerHTML = getSubtitleText(introAudioDetail.dialog, currentLanguage, i);
 						};
 						window.addEventListener('languageChange', updateText);
 
